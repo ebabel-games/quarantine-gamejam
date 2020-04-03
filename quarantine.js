@@ -6,6 +6,10 @@ const initGame = () => {
     height: 640,
     pixelArt: true,
     roundPixels: true,
+    scale: {
+      mode: Phaser.Scale.ENVELOP,
+      autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
       default: 'arcade',
       arcade: {
