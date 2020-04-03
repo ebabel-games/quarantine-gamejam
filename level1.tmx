@@ -1,17 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="64" tileheight="64" infinite="0" nextlayerid="2" nextobjectid="1">
- <layer id="1" name="Tile Layer 1" width="10" height="10">
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="64" tileheight="64" infinite="0" nextlayerid="9" nextobjectid="20">
+ <editorsettings>
+  <export target="level1.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" name="RPGpack_sheet" tilewidth="64" tileheight="64" tilecount="260" columns="20">
+  <image source="RPGpack_sheet.png" width="1280" height="832"/>
+ </tileset>
+ <layer id="2" name="Background" width="10" height="10" locked="1">
+  <data encoding="csv">
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22,
+22,22,22,22,22,22,22,22,22,22
+</data>
+ </layer>
+ <layer id="3" name="Blocked" width="10" height="10" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,
+0,183,0,0,0,0,0,0,183,0,
+0,0,0,0,204,0,203,204,0,0,
+0,0,0,201,224,201,223,224,0,0,
+0,0,204,221,201,221,0,0,0,0,
+0,0,224,0,221,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
+0,183,0,0,0,0,0,0,183,0,
 0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="5" name="Player" locked="1">
+  <object id="2" name="StartingPosition" type="StartingPosition" x="290.609" y="550.396">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="6" name="Enemies" locked="1">
+  <object id="15" name="Enemy" type="Enemy" x="363.261" y="419.401">
+   <point/>
+  </object>
+  <object id="16" name="Enemy" type="Enemy" x="197.042" y="149.708">
+   <point/>
+  </object>
+  <object id="17" name="Enemy" type="Enemy" x="479.945" y="603.234">
+   <point/>
+  </object>
+  <object id="18" name="Enemy" type="Enemy" x="37.4269" y="599.931">
+   <point/>
+  </object>
+  <object id="19" name="Enemy" type="Enemy" x="297.214" y="75.9546">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="Coins" locked="1">
+  <object id="4" name="Coin" type="Coin" x="95.7688" y="171.723">
+   <point/>
+  </object>
+  <object id="5" name="Coin" type="Coin" x="223.461" y="102.374">
+   <point/>
+  </object>
+  <object id="6" name="Coin" type="Coin" x="369.866" y="108.978">
+   <point/>
+  </object>
+  <object id="7" name="Coin" type="Coin" x="482.147" y="355.556">
+   <point/>
+  </object>
+  <object id="8" name="Coin" type="Coin" x="103.474" y="411.696">
+   <point/>
+  </object>
+  <object id="9" name="Coin" type="Coin" x="508.566" y="484.348">
+   <point/>
+  </object>
+  <object id="10" name="Coin" type="Coin" x="563.605" y="217.957">
+   <point/>
+  </object>
+  <object id="11" name="Coin" type="Coin" x="29.7214" y="473.34">
+   <point/>
+  </object>
+  <object id="12" name="Coin" type="Coin" x="473.34" y="35.2253">
+   <point/>
+  </object>
+  <object id="13" name="Coin" type="Coin" x="40.7293" y="34.1245">
+   <point/>
+  </object>
+  <object id="14" name="Coin" type="Coin" x="46.2332" y="235.569">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="Portal" locked="1">
+  <object id="3" name="Portal" type="Portal" x="288.407" y="37.4269">
+   <point/>
+  </object>
+ </objectgroup>
 </map>
