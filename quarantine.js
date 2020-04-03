@@ -2,8 +2,8 @@ const initGame = () => {
   const config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
-    width: 800,
-    height: 600,
+    width: 640,
+    height: 640,
     pixelArt: true,
     roundPixels: true,
     physics: {
@@ -33,6 +33,7 @@ const initGame = () => {
       this.map = this.make.tilemap({ key: 'level1' });
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
+      this.blockedLayer = this.map.createStaticLayer('Blocked', this.tiles, 0, 0);
     }
   }
 
