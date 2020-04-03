@@ -4,30 +4,48 @@ const initGame = () => {
     parent: 'phaser-example',
     width: 800,
     height: 600,
-    scene: {
-      preload: preload,
-      create: create
-    }
+    pixelArt: true,
+    roundPixels: true,
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { y: 0 },
+        debug: true,
+      },
+    },
   };
   
-  const game = new Phaser.Game(config);
-  
-  function preload() {
-    this.load.image('logo', 'logo.png');
+  class GameScene extends Phaser.Scene {
+    constructor(key) {
+      super(key);
+    }
+
+    preload() {
+      this.load.image('logo', 'logo.png');
+    }
+
+    create() {
+      this.logo = this.add.image(400, 200, 'logo');
+    }
   }
-  
-  function create() {
-    const logo = this.add.image(400, 150, 'logo');
-  
-    this.tweens.add({
-      targets: logo,
-      y: 450,
-      duration: 2000,
-      ease: 'Power2',
-      yoyo: true,
-      loop: -1
-    });
+
+  class Game extends Phaser.Game {
+    constructor() {
+      super(config);
+      this.scene.add('Game', GameScene);
+      this.scene.start('Game');
+    }
   }
+
+  const game = new Game();
+
+
+  window.quarantine = {
+    config,
+    Game,
+    GameScene,
+    game,
+  };
 }
 
 window.addEventListener('load', initGame);
