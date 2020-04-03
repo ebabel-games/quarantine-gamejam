@@ -21,11 +21,18 @@ const initGame = () => {
     }
 
     preload() {
-      this.load.image('logo', 'logo.png');
+      this.load.tilemapTiledJSON('level1', 'level1.json');
+      this.load.spritesheet(
+        'RPGpack_sheet',
+        'RPGpack_sheet.png',
+        { frameWidth: 64, frameHeight: 64 }
+      );
     }
 
     create() {
-      this.logo = this.add.image(400, 200, 'logo');
+      this.map = this.make.tilemap({ key: 'level1' });
+      this.tiles = this.map.addTilesetImage('RPGpack_sheet');
+      this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
     }
   }
 
