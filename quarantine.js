@@ -6,7 +6,7 @@ const initGame = () => {
     height: 640,
     pixelArt: true,
     roundPixels: true,
-    scale: {
+    scale: {  // See https://rexrainbow.github.io/phaser3-rex-notes/docs/site/scalemanager/
       mode: Phaser.Scale.ENVELOP,
       autoCenter: Phaser.Scale.CENTER_BOTH
     },
