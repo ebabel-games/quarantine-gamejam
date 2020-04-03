@@ -30,6 +30,10 @@ const initGame = () => {
     }
 
     create() {
+      this.createMap();
+    }
+
+    createMap() {
       this.map = this.make.tilemap({ key: 'level1' });
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
