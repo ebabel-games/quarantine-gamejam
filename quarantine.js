@@ -46,6 +46,13 @@ const initGame = () => {
 
       // Update the camera to follow the player.
       this.cameras.main.startFollow(this.player);
+
+      // Listen for player input.
+      this.cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    update() {
+      this.player.update(this.cursors);
     }
 
     createMap() {
@@ -57,7 +64,6 @@ const initGame = () => {
 
     createPlayer() {
       this.map.findObject('Player', (player) => {
-        console.log(player);
         this.player = new Player(this, player.x, player.y);
       });
     }
@@ -76,6 +82,47 @@ const initGame = () => {
 
       // Scale the player tile size.
       this.setScale(4);
+
+      this.straightSpeed = 150;
+      this.diagonalSpeed = 100;
+      this.noSpeed = 0;
+    }
+
+    update(cursors) {
+      if (cursors.up.isDown) {
+        this.setVelocityY(-this.straightSpeed);
+      } else if (cursors.down.isDown) {
+        this.setVelocityY(this.straightSpeed);
+      }
+      if (cursors.left.isDown) {
+        this.setVelocityX(-this.straightSpeed);
+      } else if (cursors.right.isDown) {
+        this.setVelocityX(this.straightSpeed);
+      }
+
+      if (cursors.up.isDown && cursors.left.isDown) {
+        this.setVelocityY(-this.diagonalSpeed);
+        this.setVelocityX(-this.diagonalSpeed);
+      }
+      if (cursors.up.isDown && cursors.right.isDown) {
+        this.setVelocityY(-this.diagonalSpeed);
+        this.setVelocityX(this.diagonalSpeed);
+      }
+      if (cursors.down.isDown && cursors.left.isDown) {
+        this.setVelocityY(this.diagonalSpeed);
+        this.setVelocityX(-this.diagonalSpeed);
+      }
+      if (cursors.down.isDown && cursors.right.isDown) {
+        this.setVelocityY(this.diagonalSpeed);
+        this.setVelocityX(this.diagonalSpeed);
+      }
+
+      if (cursors.up.isUp && cursors.down.isUp) {
+        this.setVelocityY(this.noSpeed);
+      }
+      if (cursors.left.isUp && cursors.right.isUp) {
+        this.setVelocityX(this.noSpeed);
+      }
     }
   }
 
