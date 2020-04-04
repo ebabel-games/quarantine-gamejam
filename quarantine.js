@@ -55,6 +55,8 @@ const initGame = () => {
       this._LEVEL = data.level;
       this._LEVELS = data.levels;
       this._NEWGAME = data.newGame;
+      this.loadingLevel = false;
+      this.cameras.main.fadeIn(500, 0, 0, 0);
     }
 
     create() {
@@ -117,7 +119,15 @@ const initGame = () => {
     }
 
     loadNextLevel() {
-      this.scene.restart({ level: this.portal.portToLevel, levels: this._LEVELS, newGame: false });
+      if (this.loadingLevel) {
+        return false;
+      }
+
+      this.cameras.main.fade(100, 0, 0, 0);
+      this.cameras.main.on('camerafadeoutcomplete', () => {
+        this.scene.restart({ level: this.portal.portToLevel, levels: this._LEVELS, newGame: false });
+      });
+      this.loadingLevel = true;
     }
   }
 
