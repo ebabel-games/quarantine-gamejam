@@ -83,8 +83,8 @@ const initGame = () => {
       // Scale the player tile size.
       this.setScale(4);
 
-      this.straightSpeed = 150;
-      this.diagonalSpeed = 100;
+      this.straightSpeed = 75;
+      this.diagonalSpeed = 50;
       this.noSpeed = 0;
     }
 
