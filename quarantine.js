@@ -37,6 +37,7 @@ const initGame = () => {
       this.load.spritesheet('RPGpack_sheet', 'RPGpack_sheet.png', {frameWidth: 64, frameHeight: 64});
       this.load.spritesheet('characters', 'roguelikeChar_transparent.png', {frameWidth: 17, frameHeight: 17});
       this.load.image('portal', 'raft.png');
+      this.load.image('coin', 'coin_01.png');
     }
 
     create() {
@@ -66,6 +67,7 @@ const initGame = () => {
       this.createMap();
       this.createPlayer();
       this.createPortal();
+      this.createCoins();
 
       // Update the camera to follow the player.
       this.cameras.main.startFollow(this.player);
@@ -81,16 +83,14 @@ const initGame = () => {
     addCollisions() {
       this.physics.add.collider(this.player, this.blockedLayer);
       this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this));
+      this.physics.add.overlap(this.coinsGroup, this.player, this.coinsGroup.collectCoin.bind(this.coinsGroup));
     }
 
     createMap() {
       this.add.tileSprite(0, 0, 8000, 8000, 'RPGpack_sheet', 31); // Add water everywhere in the background.
 
-
       // Load the current level.
       this.map = this.make.tilemap({ key: this._LEVELS[this._LEVEL] });
-
-
 
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
@@ -116,6 +116,11 @@ const initGame = () => {
         const portToLevel = portal.properties.find(item => item.name === 'portToLevel').value;
         this.portal = new Portal(this, portal.x, portal.y, offsetY, portToLevel);
       });
+    }
+
+    createCoins() {
+      this.coins = this.map.createFromObjects('Coins', 'Coin', { key: 'coin' });
+      this.coinsGroup = new Coins(this.physics.world, this, [], this.coins);
     }
 
     loadNextLevel() {
@@ -196,6 +201,28 @@ const initGame = () => {
       this.scene = scene;
       this.scene.physics.world.enable(this);
       this.scene.add.existing(this);
+    }
+  }
+
+  class Coins extends Phaser.Physics.Arcade.StaticGroup {
+    constructor(world, scene, children, spriteArray) {
+      super(world, scene, children);
+      this.scene = scene;
+
+      if (!spriteArray || spriteArray.length === 0) {
+        return;
+      }
+
+      // Add the spriteArray to the group.
+      spriteArray.forEach((coin) => {
+        coin.setScale(0.2);
+        this.add(coin);
+      });
+    }
+
+    collectCoin(player, coin) {
+      this.remove(coin);
+      coin.destroy();
     }
   }
 
