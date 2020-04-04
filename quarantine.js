@@ -52,7 +52,6 @@ const initGame = () => {
     }
 
     init(data) {
-      console.log(data);
       this._LEVEL = data.level;
       this._LEVELS = data.levels;
       this._NEWGAME = data.newGame;
