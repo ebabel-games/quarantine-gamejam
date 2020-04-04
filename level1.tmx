@@ -8,7 +8,7 @@
  </tileset>
  <layer id="2" name="Background" width="10" height="10">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,
+0,0,0,32,32,0,0,0,0,0,
 0,22,0,110,112,0,22,22,22,0,
 0,22,22,110,112,22,22,22,22,0,
 0,22,22,22,22,22,22,22,22,0,
@@ -22,7 +22,7 @@
  </layer>
  <layer id="3" name="Blocked" width="10" height="10">
   <data encoding="csv">
-14,52,15,32,32,14,52,52,52,15,
+14,52,15,0,0,14,52,52,52,15,
 33,0,51,0,0,53,0,0,0,31,
 33,0,0,0,0,0,0,0,0,31,
 33,0,0,0,0,0,0,0,0,31,
@@ -73,6 +73,7 @@
  <objectgroup id="8" name="Portal">
   <object id="3" name="Portal" type="Portal" x="255.488" y="95.1109">
    <properties>
+    <property name="offsetY" type="int" value="-66"/>
     <property name="portToLevel" type="int" value="2"/>
    </properties>
    <point/>

@@ -110,8 +110,9 @@ const initGame = () => {
 
     createPortal() {
       this.map.findObject('Portal', (portal) => {
+        const offsetY = portal.properties.find(item => item.name === 'offsetY').value;
         const portToLevel = portal.properties.find(item => item.name === 'portToLevel').value;
-        this.portal = new Portal(this, portal.x, portal.y, portToLevel);
+        this.portal = new Portal(this, portal.x, portal.y, offsetY, portToLevel);
       });
     }
 
@@ -178,8 +179,9 @@ const initGame = () => {
   }
 
   class Portal extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, portToLevel) {
-      super(scene, x, y, 'portal');
+    constructor(scene, x, y, offsetY, portToLevel) {
+      super(scene, x, y + offsetY, 'portal');
+      this.offsetY = offsetY;
       this.portToLevel = portToLevel;
       this.scene = scene;
       this.scene.physics.world.enable(this);
