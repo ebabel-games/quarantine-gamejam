@@ -209,10 +209,6 @@ const initGame = () => {
       super(world, scene, children);
       this.scene = scene;
 
-      if (!spriteArray || spriteArray.length === 0) {
-        return;
-      }
-
       // Add the spriteArray to the group.
       spriteArray.forEach((coin) => {
         coin.setScale(0.2);
