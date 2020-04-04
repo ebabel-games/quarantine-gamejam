@@ -83,7 +83,13 @@ const initGame = () => {
 
     createMap() {
       this.add.tileSprite(0, 0, 8000, 8000, 'RPGpack_sheet', 31); // Add water everywhere in the background.
+
+
+      // Load the current level.
       this.map = this.make.tilemap({ key: this._LEVELS[this._LEVEL] });
+
+
+
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
       this.blockedLayer = this.map.createStaticLayer('Blocked', this.tiles, 0, 0);
@@ -104,12 +110,13 @@ const initGame = () => {
 
     createPortal() {
       this.map.findObject('Portal', (portal) => {
-        this.portal = new Portal(this, portal.x, portal.y)
+        const portToLevel = portal.properties.find(item => item.name === 'portToLevel').value;
+        this.portal = new Portal(this, portal.x, portal.y, portToLevel);
       });
     }
 
     loadNextLevel() {
-      this.scene.restart({ level: 2, levels: this._LEVELS, newGame: false });
+      this.scene.restart({ level: this.portal.portToLevel, levels: this._LEVELS, newGame: false });
     }
   }
 
@@ -171,8 +178,9 @@ const initGame = () => {
   }
 
   class Portal extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y) {
-      super(scene, x, y - 75, 'portal');
+    constructor(scene, x, y, portToLevel) {
+      super(scene, x, y, 'portal');
+      this.portToLevel = portToLevel;
       this.scene = scene;
       this.scene.physics.world.enable(this);
       this.scene.add.existing(this);
