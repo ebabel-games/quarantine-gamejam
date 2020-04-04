@@ -67,6 +67,7 @@ const initGame = () => {
     }
 
     createMap() {
+      this.add.tileSprite(0, 0, 8000, 8000, 'RPGpack_sheet', 31); // Add water everywhere in the background.
       this.map = this.make.tilemap({ key: 'level1' });
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
