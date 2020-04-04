@@ -28,6 +28,7 @@ const initGame = () => {
       this.load.tilemapTiledJSON('level1', 'level1.json');
       this.load.spritesheet('RPGpack_sheet', 'RPGpack_sheet.png', {frameWidth: 64, frameHeight: 64});
       this.load.spritesheet('characters', 'roguelikeChar_transparent.png', {frameWidth: 17, frameHeight: 17});
+      this.load.image('portal', 'raft.png');
     }
 
     create() {
@@ -38,21 +39,31 @@ const initGame = () => {
   class GameScene extends Phaser.Scene {
     constructor(key) {
       super(key);
+
+      this.noTileExcluded = [-1];
     }
 
     create() {
+      // Listen for player input.
+      this.cursors = this.input.keyboard.createCursorKeys();
+
       this.createMap();
       this.createPlayer();
+      this.createPortal();
 
       // Update the camera to follow the player.
       this.cameras.main.startFollow(this.player);
 
-      // Listen for player input.
-      this.cursors = this.input.keyboard.createCursorKeys();
+      // Create collisions.
+      this.addCollisions();
     }
 
     update() {
       this.player.update(this.cursors);
+    }
+
+    addCollisions() {
+      this.physics.add.collider(this.player, this.blockedLayer);
     }
 
     createMap() {
@@ -60,11 +71,19 @@ const initGame = () => {
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
       this.blockedLayer = this.map.createStaticLayer('Blocked', this.tiles, 0, 0);
+      this.blockedLayer.setCollisionByExclusion(this.noTileExcluded);
+      this.foregroundLayer = this.map.createStaticLayer('Foreground', this.tiles, 0, 0);
     }
 
     createPlayer() {
       this.map.findObject('Player', (player) => {
         this.player = new Player(this, player.x, player.y);
+      });
+    }
+
+    createPortal() {
+      this.map.findObject('Portal', (portal) => {
+        this.portal = new Portal(this, portal.x, portal.y)
       });
     }
   }
@@ -83,8 +102,8 @@ const initGame = () => {
       // Scale the player tile size.
       this.setScale(4);
 
-      this.straightSpeed = 75;
-      this.diagonalSpeed = 50;
+      this.straightSpeed = 300;
+      this.diagonalSpeed = 200;
       this.noSpeed = 0;
     }
 
@@ -123,6 +142,15 @@ const initGame = () => {
       if (cursors.left.isUp && cursors.right.isUp) {
         this.setVelocityX(this.noSpeed);
       }
+    }
+  }
+
+  class Portal extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+      super(scene, x, y - 68, 'portal');
+      this.scene = scene;
+      this.scene.physics.world.enable(this);
+      this.scene.add.existing(this);
     }
   }
 
