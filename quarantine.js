@@ -25,14 +25,22 @@ const initGame = () => {
     }
 
     preload() {
-      this.load.tilemapTiledJSON('level1', 'level1.json');
+      this.levels = {
+        1: 'level1',
+        2: 'level2',
+      };
+
+      Object.keys(this.levels).map((key) => {
+        return this.load.tilemapTiledJSON(this.levels[key], `${this.levels[key]}.json`);
+      });
+
       this.load.spritesheet('RPGpack_sheet', 'RPGpack_sheet.png', {frameWidth: 64, frameHeight: 64});
       this.load.spritesheet('characters', 'roguelikeChar_transparent.png', {frameWidth: 17, frameHeight: 17});
       this.load.image('portal', 'raft.png');
     }
 
     create() {
-      this.scene.start('Game');
+      this.scene.start('Game', {level: 1, newGame: true, levels: this.levels});
     }
   }
   
@@ -41,6 +49,13 @@ const initGame = () => {
       super(key);
 
       this.noTileExcluded = [-1];
+    }
+
+    init(data) {
+      console.log(data);
+      this._LEVEL = data.level;
+      this._LEVELS = data.levels;
+      this._NEWGAME = data.newGame;
     }
 
     create() {
@@ -64,14 +79,20 @@ const initGame = () => {
 
     addCollisions() {
       this.physics.add.collider(this.player, this.blockedLayer);
+      this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this));
     }
 
     createMap() {
       this.add.tileSprite(0, 0, 8000, 8000, 'RPGpack_sheet', 31); // Add water everywhere in the background.
-      this.map = this.make.tilemap({ key: 'level1' });
+      this.map = this.make.tilemap({ key: this._LEVELS[this._LEVEL] });
       this.tiles = this.map.addTilesetImage('RPGpack_sheet');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
       this.blockedLayer = this.map.createStaticLayer('Blocked', this.tiles, 0, 0);
+
+      if (!this.blockedLayer) {
+        throw new Error('Map is either missing or does not have a Blocked layer.');
+      }
+
       this.blockedLayer.setCollisionByExclusion(this.noTileExcluded);
       this.foregroundLayer = this.map.createStaticLayer('Foreground', this.tiles, 0, 0);
     }
@@ -86,6 +107,10 @@ const initGame = () => {
       this.map.findObject('Portal', (portal) => {
         this.portal = new Portal(this, portal.x, portal.y)
       });
+    }
+
+    loadNextLevel() {
+      this.scene.restart({ level: 2, levels: this._LEVELS, newGame: false });
     }
   }
 
@@ -103,8 +128,8 @@ const initGame = () => {
       // Scale the player tile size.
       this.setScale(4);
 
-      this.straightSpeed = 300;
-      this.diagonalSpeed = 200;
+      this.straightSpeed = 150;
+      this.diagonalSpeed = Math.ceil(Math.sqrt(Math.pow(this.straightSpeed, 2)/2)); // This formula is based on a 45 degrees angle, to maintain a consistent speed.
       this.noSpeed = 0;
     }
 
@@ -148,7 +173,7 @@ const initGame = () => {
 
   class Portal extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
-      super(scene, x, y - 68, 'portal');
+      super(scene, x, y - 75, 'portal');
       this.scene = scene;
       this.scene.physics.world.enable(this);
       this.scene.add.existing(this);
