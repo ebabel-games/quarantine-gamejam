@@ -18,23 +18,34 @@ const initGame = () => {
       },
     },
   };
-  
-  class GameScene extends Phaser.Scene {
+
+  class BootScene extends Phaser.Scene {
     constructor(key) {
       super(key);
     }
 
     preload() {
       this.load.tilemapTiledJSON('level1', 'level1.json');
-      this.load.spritesheet(
-        'RPGpack_sheet',
-        'RPGpack_sheet.png',
-        { frameWidth: 64, frameHeight: 64 }
-      );
+      this.load.spritesheet('RPGpack_sheet', 'RPGpack_sheet.png', {frameWidth: 64, frameHeight: 64});
+      this.load.spritesheet('characters', 'roguelikeChar_transparent.png', {frameWidth: 17, frameHeight: 17});
+    }
+
+    create() {
+      this.scene.start('Game');
+    }
+  }
+  
+  class GameScene extends Phaser.Scene {
+    constructor(key) {
+      super(key);
     }
 
     create() {
       this.createMap();
+      this.createPlayer();
+
+      // Update the camera to follow the player.
+      this.cameras.main.startFollow(this.player);
     }
 
     createMap() {
@@ -43,25 +54,41 @@ const initGame = () => {
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
       this.blockedLayer = this.map.createStaticLayer('Blocked', this.tiles, 0, 0);
     }
+
+    createPlayer() {
+      this.map.findObject('Player', (player) => {
+        console.log(player);
+        this.player = new Player(this, player.x, player.y);
+      });
+    }
+  }
+
+  class Player extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+      super(scene, x, y, 'characters', 325);
+      this.scene = scene;
+
+      // Enable physics for the player object.
+      this.scene.physics.world.enable(this);
+
+      // Add the player object to the scene.
+      this.scene.add.existing(this);
+
+      // Scale the player tile size.
+      this.setScale(4);
+    }
   }
 
   class Game extends Phaser.Game {
     constructor() {
       super(config);
+      this.scene.add('Boot', BootScene);
       this.scene.add('Game', GameScene);
-      this.scene.start('Game');
+      this.scene.start('Boot');
     }
   }
 
-  const game = new Game();
-
-
-  window.quarantine = {
-    config,
-    Game,
-    GameScene,
-    game,
-  };
+  window.game = new Game();
 }
 
 window.addEventListener('load', initGame);
