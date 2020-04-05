@@ -44,7 +44,7 @@ const initGame = () => {
       this.scene.start('Game', {level: 1, newGame: true, levels: this.levels});
     }
   }
-  
+
   class GameScene extends Phaser.Scene {
     constructor(key) {
       super(key);
@@ -57,6 +57,9 @@ const initGame = () => {
       this._LEVELS = data.levels;
       this._NEWGAME = data.newGame;
       this.loadingLevel = false;
+      if (this._NEWGAME) {
+        this.events.emit('newGame');
+      }
       this.cameras.main.fadeIn(500, 0, 0, 0);
     }
 
@@ -150,12 +153,12 @@ const initGame = () => {
 
       this.cameras.main.fade(100, 0, 0, 0);
       this.cameras.main.on('camerafadeoutcomplete', () => {
-        this.scene.restart({ level: 1, levels: this._LEVELS, newGame: false });
+        this.scene.restart({ level: 1, levels: this._LEVELS, newGame: true });
       });
       this.loadingLevel = true;
     }
   }
-  
+
   class UIScene extends Phaser.Scene {
     constructor() {
       super({ key: 'UI', active: true });
@@ -179,6 +182,12 @@ const initGame = () => {
 
       this.gameScene.events.on('loseHealth', (health) => {
         this.healthText.setText(`Health: ${health}`);
+      });
+
+      this.gameScene.events.on('newGame', () => {
+        this.coinsCollected = 0;
+        this.scoreText.setText(`Score: ${this.coinsCollected}`);
+        this.healthText.setText('Health: 3');
       });
     }
   }
