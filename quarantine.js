@@ -64,6 +64,8 @@ const initGame = () => {
     }
 
     create() {
+      this.uiScene = this.scene.get('UI');
+
       // Listen for player input.
       this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -88,7 +90,7 @@ const initGame = () => {
       this.physics.add.collider(this.player, this.blockedLayer);
       this.physics.add.collider(this.enemiesGroup, this.blockedLayer);
       this.physics.add.overlap(this.player, this.enemiesGroup, this.player.enemyCollision.bind(this.player));
-      this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this));
+      this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this, false));
       this.physics.add.overlap(this.coinsGroup, this.player, this.coinsGroup.collectCoin.bind(this.coinsGroup));
     }
 
@@ -134,26 +136,18 @@ const initGame = () => {
       this.enemiesGroup = new Enemies(this.physics.world, this, [], this.enemies);
     }
 
-    loadNextLevel() {
+    loadNextLevel(endGame) {
       if (this.loadingLevel) {
         return false;
       }
 
       this.cameras.main.fade(100, 0, 0, 0);
       this.cameras.main.on('camerafadeoutcomplete', () => {
-        this.scene.restart({ level: this.portal.portToLevel, levels: this._LEVELS, newGame: false });
-      });
-      this.loadingLevel = true;
-    }
-
-    respawn() {
-      if (this.loadingLevel) {
-        return false;
-      }
-
-      this.cameras.main.fade(100, 0, 0, 0);
-      this.cameras.main.on('camerafadeoutcomplete', () => {
-        this.scene.restart({ level: 1, levels: this._LEVELS, newGame: true });
+        if (endGame) {
+          this.scene.restart({ level: 1, levels: this._LEVELS, newGame: true });
+        } else {
+          this.scene.restart({ level: this.portal.portToLevel, levels: this._LEVELS, newGame: false });
+        }
       });
       this.loadingLevel = true;
     }
@@ -166,12 +160,13 @@ const initGame = () => {
 
     init() {
       this.coinsCollected = 0;
+      this.health = 3;
     }
 
     create() {
       const textStyle = { fontSize: '32px', fill: '#ffffff' };
       this.scoreText = this.add.text(12, 12, `Score: ${this.coinsCollected}`, textStyle);
-      this.healthText = this.add.text(12, 50, `Health: 3`, textStyle);
+      this.healthText = this.add.text(12, 50, `Health: ${this.health}`, textStyle);
 
       this.gameScene = this.scene.get('Game');
 
@@ -180,14 +175,16 @@ const initGame = () => {
         this.scoreText.setText(`Score: ${this.coinsCollected}`);
       });
 
-      this.gameScene.events.on('loseHealth', (health) => {
-        this.healthText.setText(`Health: ${health}`);
+      this.gameScene.events.on('loseHealth', () => {
+        this.health -= 1;
+        this.healthText.setText(`Health: ${this.health}`);
       });
 
       this.gameScene.events.on('newGame', () => {
         this.coinsCollected = 0;
+        this.health = 3;
         this.scoreText.setText(`Score: ${this.coinsCollected}`);
-        this.healthText.setText('Health: 3');
+        this.healthText.setText(`Health: ${this.health}`);
       });
     }
   }
@@ -196,7 +193,6 @@ const initGame = () => {
     constructor(scene, x, y) {
       super(scene, x, y, 'characters', 325);
       this.scene = scene;
-      this.health = 3;
       this.hitDelay = false;
 
       // Enable physics for the player object.
@@ -267,10 +263,9 @@ const initGame = () => {
     }
 
     loseHealth() {
-      this.health--;
-      this.scene.events.emit('loseHealth', this.health);
-      if (this.health <= 0) {
-        this.scene.respawn();
+      this.scene.events.emit('loseHealth');
+      if (this.scene.uiScene.health <= 0) {
+        this.scene.loadNextLevel(true);
       }
     }
   }
