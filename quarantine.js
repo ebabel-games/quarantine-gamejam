@@ -166,11 +166,19 @@ const initGame = () => {
     }
 
     create() {
-      this.scoreText = this.add.text(12, 12, `Score: ${this.coinsCollected}`, { fontSize: '32px', fill: '#ffffff' });
+      const textStyle = { fontSize: '32px', fill: '#ffffff' };
+      this.scoreText = this.add.text(12, 12, `Score: ${this.coinsCollected}`, textStyle);
+      this.healthText = this.add.text(12, 50, `Health: 3`, textStyle);
+
       this.gameScene = this.scene.get('Game');
+
       this.gameScene.events.on('coinCollected', () => {
         this.coinsCollected += 1;
         this.scoreText.setText(`Score: ${this.coinsCollected}`);
+      });
+
+      this.gameScene.events.on('loseHealth', (health) => {
+        this.healthText.setText(`Health: ${health}`);
       });
     }
   }
@@ -251,6 +259,7 @@ const initGame = () => {
 
     loseHealth() {
       this.health--;
+      this.scene.events.emit('loseHealth', this.health);
       if (this.health <= 0) {
         this.scene.respawn();
       }
