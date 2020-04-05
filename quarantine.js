@@ -7,7 +7,7 @@ const initGame = () => {
     pixelArt: true,
     roundPixels: true,
     scale: {  // See https://rexrainbow.github.io/phaser3-rex-notes/docs/site/scalemanager/
-      mode: Phaser.Scale.ENVELOP,
+      mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
@@ -136,6 +136,16 @@ const initGame = () => {
     }
   }
 
+  class UIScene extends Phaser.Scene {
+    constructor() {
+      super({ key: 'UI', active: true });
+    }
+
+    create() {
+      this.add.text(12, 12, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
+    }
+  }
+
   class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
       super(scene, x, y, 'characters', 325);
@@ -223,7 +233,7 @@ const initGame = () => {
     collectCoin(player, coin) {
       this.remove(coin);
       coin.destroy();
-      this.refresh();
+      
     }
   }
 
@@ -232,6 +242,7 @@ const initGame = () => {
       super(config);
       this.scene.add('Boot', BootScene);
       this.scene.add('Game', GameScene);
+      this.scene.add('UI', UIScene);
       this.scene.start('Boot');
     }
   }
