@@ -7,8 +7,8 @@ const initGame = () => {
     pixelArt: true,
     roundPixels: true,
     scale: {  // See https://rexrainbow.github.io/phaser3-rex-notes/docs/site/scalemanager/
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH
+      mode: Phaser.Scale.ENVELOP,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     physics: {
       default: 'arcade',
@@ -255,9 +255,9 @@ const initGame = () => {
   }
 
   class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y) {
-      super(scene, x, y, 'characters', 163);
-      
+    constructor(scene, x, y, frameIndex) {
+      super(scene, x, y, 'characters', frameIndex);
+
       this.scene = scene;
 
       this.scene.physics.world.enable(this);
@@ -270,13 +270,15 @@ const initGame = () => {
     constructor(world, scene, children, spriteArray) {
       super(world, scene, children);
       this.scene = scene;
+      this.spriteFrames = [0, 1, 54, 55, 108, 109, 162, 163];
 
       this.createEnemies(scene, spriteArray);
     }
 
     createEnemies(scene, spriteArray) {
       spriteArray.forEach((sprite) => {
-        const enemy = new  Enemy(scene, sprite.x, sprite.y);
+        const randomIndex = Math.floor(Math.random() * this.spriteFrames.length - 1);
+        const enemy = new  Enemy(scene, sprite.x, sprite.y, this.spriteFrames[randomIndex]);
         this.add(enemy);
         sprite.destroy();
       });
