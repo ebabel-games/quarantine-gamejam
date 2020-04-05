@@ -266,16 +266,20 @@ const initGame = () => {
 
       // Move this enemy.
       this.scene.time.addEvent({
-        delay: Math.ceil(Math.random() * 2000 + 1500),
+        delay: Math.ceil(Math.random() * 4000 + 1000),
         callback: this.move,
         loop: true,
         callbackScope: this,
       });
     }
 
+    randomDirection() {
+      return Math.ceil(Math.random() * 50 + 50) * (Math.random() >= 0.5 ? 1 : -1);
+    }
+
     move() {
-      this.setVelocityX(Math.ceil(Math.random() * 50 + 50) * (Math.random() >= 0.5 ? 1 : -1));
-      this.setVelocityY(Math.ceil(Math.random() * 50 + 50) * (Math.random() >= 0.5 ? 1 : -1))
+      this.setVelocityX(this.randomDirection());
+      this.setVelocityY(this.randomDirection())
       this.scene.time.addEvent({
         delay: 500,
         callback: () => {
