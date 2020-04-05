@@ -180,6 +180,7 @@ const initGame = () => {
       super(scene, x, y, 'characters', 325);
       this.scene = scene;
       this.health = 3;
+      this.hitDelay = false;
 
       // Enable physics for the player object.
       this.scene.physics.world.enable(this);
@@ -233,13 +234,22 @@ const initGame = () => {
     }
 
     enemyCollision(player, enemy) {
-      this.loseHealth();
+      if (!this.hitDelay) {
+        this.loseHealth();
+        this.hitDelay = true;
+        this.scene.time.addEvent({
+          delay: 1200,
+          callback: () => {
+            this.hitDelay = false;
+          },
+          callbackScope: this,
+        });
+      }
     }
 
     loseHealth() {
       this.health--;
       if (this.health <= 0) {
-        // this.scene._LEVEL = 1;
         this.scene.respawn();
       }
     }
