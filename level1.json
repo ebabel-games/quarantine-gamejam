@@ -59,6 +59,65 @@
         }, 
         {
          "draworder":"topdown",
+         "id":7,
+         "name":"Coins",
+         "objects":[
+                {
+                 "height":0,
+                 "id":7,
+                 "name":"Coin",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Coin",
+                 "visible":true,
+                 "width":0,
+                 "x":482.147,
+                 "y":355.556
+                }, 
+                {
+                 "height":0,
+                 "id":8,
+                 "name":"Coin",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Coin",
+                 "visible":true,
+                 "width":0,
+                 "x":103.474,
+                 "y":411.696
+                }, 
+                {
+                 "height":0,
+                 "id":9,
+                 "name":"Coin",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Coin",
+                 "visible":true,
+                 "width":0,
+                 "x":508.566,
+                 "y":484.348
+                }, 
+                {
+                 "height":0,
+                 "id":10,
+                 "name":"Coin",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Coin",
+                 "visible":true,
+                 "width":0,
+                 "x":472.288,
+                 "y":160.283
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":6,
          "name":"Enemies",
          "objects":[
@@ -121,65 +180,6 @@
                  "width":0,
                  "x":450.176,
                  "y":490.227
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":7,
-         "name":"Coins",
-         "objects":[
-                {
-                 "height":0,
-                 "id":7,
-                 "name":"Coin",
-                 "point":true,
-                 "rotation":0,
-                 "type":"Coin",
-                 "visible":true,
-                 "width":0,
-                 "x":482.147,
-                 "y":355.556
-                }, 
-                {
-                 "height":0,
-                 "id":8,
-                 "name":"Coin",
-                 "point":true,
-                 "rotation":0,
-                 "type":"Coin",
-                 "visible":true,
-                 "width":0,
-                 "x":103.474,
-                 "y":411.696
-                }, 
-                {
-                 "height":0,
-                 "id":9,
-                 "name":"Coin",
-                 "point":true,
-                 "rotation":0,
-                 "type":"Coin",
-                 "visible":true,
-                 "width":0,
-                 "x":508.566,
-                 "y":484.348
-                }, 
-                {
-                 "height":0,
-                 "id":10,
-                 "name":"Coin",
-                 "point":true,
-                 "rotation":0,
-                 "type":"Coin",
-                 "visible":true,
-                 "width":0,
-                 "x":472.288114386415,
-                 "y":160.283177507209
                 }],
          "opacity":1,
          "type":"objectgroup",

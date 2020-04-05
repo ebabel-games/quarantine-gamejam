@@ -14,7 +14,7 @@ const initGame = () => {
       default: 'arcade',
       arcade: {
         gravity: { y: 0 },
-        debug: true,
+        debug: false,
       },
     },
   };
@@ -68,12 +68,13 @@ const initGame = () => {
       this.createPlayer();
       this.createPortal();
       this.createCoins();
-
-      // Update the camera to follow the player.
-      this.cameras.main.startFollow(this.player);
+      this.createEnemies();
 
       // Create collisions.
       this.addCollisions();
+
+      // Update the camera to follow the player.
+      this.cameras.main.startFollow(this.player);
     }
 
     update() {
@@ -123,6 +124,11 @@ const initGame = () => {
       this.coinsGroup = new Coins(this.physics.world, this, [], this.coins);
     }
 
+    createEnemies() {
+      this.enemies = this.map.createFromObjects('Enemies', 'Enemy', {});
+      this.enemiesGroup = new Enemies(this.physics.world, this, [], this.enemies);
+    }
+
     loadNextLevel() {
       if (this.loadingLevel) {
         return false;
@@ -141,8 +147,17 @@ const initGame = () => {
       super({ key: 'UI', active: true });
     }
 
+    init() {
+      this.coinsCollected = 0;
+    }
+
     create() {
-      this.add.text(12, 12, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
+      this.scoreText = this.add.text(12, 12, `Score: ${this.coinsCollected}`, { fontSize: '32px', fill: '#ffffff' });
+      this.gameScene = this.scene.get('Game');
+      this.gameScene.events.on('coinCollected', () => {
+        this.coinsCollected += 1;
+        this.scoreText.setText(`Score: ${this.coinsCollected}`);
+      });
     }
   }
 
@@ -218,8 +233,10 @@ const initGame = () => {
     constructor(world, scene, children, spriteArray) {
       super(world, scene, children);
       this.scene = scene;
+      this.createCoins(spriteArray);
+    }
 
-      // Add the spriteArray to the group.
+    createCoins(spriteArray) {
       spriteArray.forEach((coin) => {
         coin.setOrigin(0);
         this.world.enableBody(coin, 1);
@@ -233,7 +250,36 @@ const initGame = () => {
     collectCoin(player, coin) {
       this.remove(coin);
       coin.destroy();
+      this.scene.events.emit('coinCollected');
+    }
+  }
+
+  class Enemy extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+      super(scene, x, y, 'characters', 163);
       
+      this.scene = scene;
+
+      this.scene.physics.world.enable(this);
+      this.scene.add.existing(this);
+      this.setScale(4);
+    }
+  }
+
+  class Enemies extends Phaser.Physics.Arcade.Group {
+    constructor(world, scene, children, spriteArray) {
+      super(world, scene, children);
+      this.scene = scene;
+
+      this.createEnemies(scene, spriteArray);
+    }
+
+    createEnemies(scene, spriteArray) {
+      spriteArray.forEach((sprite) => {
+        const enemy = new  Enemy(scene, sprite.x, sprite.y);
+        this.add(enemy);
+        sprite.destroy();
+      });
     }
   }
 

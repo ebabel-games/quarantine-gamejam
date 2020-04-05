@@ -39,6 +39,20 @@
    <point/>
   </object>
  </objectgroup>
+ <objectgroup id="7" name="Coins">
+  <object id="7" name="Coin" type="Coin" x="482.147" y="355.556">
+   <point/>
+  </object>
+  <object id="8" name="Coin" type="Coin" x="103.474" y="411.696">
+   <point/>
+  </object>
+  <object id="9" name="Coin" type="Coin" x="508.566" y="484.348">
+   <point/>
+  </object>
+  <object id="10" name="Coin" type="Coin" x="472.288" y="160.283">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="6" name="Enemies">
   <object id="15" name="Enemy" type="Enemy" x="153.392" y="494.697">
    <point/>
@@ -53,20 +67,6 @@
    <point/>
   </object>
   <object id="22" name="Enemy" type="Enemy" x="450.176" y="490.227">
-   <point/>
-  </object>
- </objectgroup>
- <objectgroup id="7" name="Coins">
-  <object id="7" name="Coin" type="Coin" x="482.147" y="355.556">
-   <point/>
-  </object>
-  <object id="8" name="Coin" type="Coin" x="103.474" y="411.696">
-   <point/>
-  </object>
-  <object id="9" name="Coin" type="Coin" x="508.566" y="484.348">
-   <point/>
-  </object>
-  <object id="10" name="Coin" type="Coin" x="472.288" y="160.283">
    <point/>
   </object>
  </objectgroup>
