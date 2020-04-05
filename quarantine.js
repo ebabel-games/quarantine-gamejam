@@ -237,10 +237,12 @@ const initGame = () => {
       if (!this.hitDelay) {
         this.loseHealth();
         this.hitDelay = true;
+        this.tint = 0xff0000;
         this.scene.time.addEvent({
           delay: 1200,
           callback: () => {
             this.hitDelay = false;
+            this.tint = 0xffffff;
           },
           callbackScope: this,
         });
