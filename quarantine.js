@@ -83,6 +83,8 @@ const initGame = () => {
 
     addCollisions() {
       this.physics.add.collider(this.player, this.blockedLayer);
+      this.physics.add.collider(this.enemiesGroup, this.blockedLayer);
+      this.physics.add.overlap(this.player, this.enemiesGroup, this.player.enemyCollision.bind(this.player));
       this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this));
       this.physics.add.overlap(this.coinsGroup, this.player, this.coinsGroup.collectCoin.bind(this.coinsGroup));
     }
@@ -140,8 +142,20 @@ const initGame = () => {
       });
       this.loadingLevel = true;
     }
-  }
 
+    respawn() {
+      if (this.loadingLevel) {
+        return false;
+      }
+
+      this.cameras.main.fade(100, 0, 0, 0);
+      this.cameras.main.on('camerafadeoutcomplete', () => {
+        this.scene.restart({ level: 1, levels: this._LEVELS, newGame: false });
+      });
+      this.loadingLevel = true;
+    }
+  }
+  
   class UIScene extends Phaser.Scene {
     constructor() {
       super({ key: 'UI', active: true });
@@ -165,6 +179,7 @@ const initGame = () => {
     constructor(scene, x, y) {
       super(scene, x, y, 'characters', 325);
       this.scene = scene;
+      this.health = 3;
 
       // Enable physics for the player object.
       this.scene.physics.world.enable(this);
@@ -214,6 +229,18 @@ const initGame = () => {
       }
       if (cursors.left.isUp && cursors.right.isUp) {
         this.setVelocityX(this.noSpeed);
+      }
+    }
+
+    enemyCollision(player, enemy) {
+      this.loseHealth();
+    }
+
+    loseHealth() {
+      this.health--;
+      if (this.health <= 0) {
+        // this.scene._LEVEL = 1;
+        this.scene.respawn();
       }
     }
   }
