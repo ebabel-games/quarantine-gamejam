@@ -38,6 +38,7 @@ const initGame = () => {
       this.load.spritesheet('characters', 'roguelikeChar_transparent.png', {frameWidth: 17, frameHeight: 17});
       this.load.image('portal', 'raft.png');
       this.load.image('coin', 'coin_01.png');
+      this.load.image('bullet', 'ballBlack_04.png');
     }
 
     create() {
@@ -68,12 +69,14 @@ const initGame = () => {
 
       // Listen for player input.
       this.cursors = this.input.keyboard.createCursorKeys();
+      this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
       this.createMap();
       this.createPlayer();
       this.createPortal();
       this.createCoins();
       this.createEnemies();
+      this.createBullets();
 
       // Create collisions.
       this.addCollisions();
@@ -84,6 +87,10 @@ const initGame = () => {
 
     update() {
       this.player.update(this.cursors);
+
+      if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        this.bullets.fireBullet(this.player.x, this.player.y);
+      }
     }
 
     addCollisions() {
@@ -134,6 +141,10 @@ const initGame = () => {
     createEnemies() {
       this.enemies = this.map.createFromObjects('Enemies', 'Enemy', {});
       this.enemiesGroup = new Enemies(this.physics.world, this, [], this.enemies);
+    }
+
+    createBullets() {
+      this.bullets = new Bullets(this.physics.world, this, []);
     }
 
     loadNextLevel(endGame) {
@@ -311,6 +322,7 @@ const initGame = () => {
       super(scene, x, y, 'characters', frameIndex);
 
       this.scene = scene;
+      this.health = 3;
 
       this.scene.physics.world.enable(this);
       this.scene.add.existing(this);
@@ -342,6 +354,21 @@ const initGame = () => {
         callbackScope: this,
       });
     }
+
+    loseHealth() {
+      this.health--;
+      this.tint = 0xff0000;
+      if (this.health <= 0) {
+        this.destroy();
+      } else {
+        this.scene.time.addEvent({
+          delay: 200,
+          callback: () => {
+            this.tint = 0xffffff;
+          },
+        });
+      }
+    }
   }
 
   class Enemies extends Phaser.Physics.Arcade.Group {
@@ -360,6 +387,31 @@ const initGame = () => {
         this.add(enemy);
         sprite.destroy();
       });
+    }
+  }
+
+  class Bullets extends Phaser.Physics.Arcade.Group {
+    constructor(world, scene, children) {
+      super(world, scene);
+      this.scene = scene;
+
+      this.createMultiple({
+        frameQuantity: 5,
+        key: 'bullet',
+        active: false,
+        visible: false,
+      });
+    }
+
+    fireBullet(x, y) {
+      const bullet = this.getFirstDead(false);
+      if (bullet) {
+        this.scene.physics.add.existing(bullet);
+        bullet.active = true;
+        bullet.visible = true;
+        bullet.setPosition(x, y);
+        bullet.setVelocityX(300);
+      }
     }
   }
 
