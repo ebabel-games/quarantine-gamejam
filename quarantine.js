@@ -39,7 +39,7 @@ const initGame = () => {
 
       this.load.spritesheet('tiles', 'tiles.png', {frameWidth: 64, frameHeight: 64});
       this.load.image('portal', 'raft.png');
-      this.load.image('coin', 'heart.png');
+      this.load.image('heart', 'heart.png');
       this.load.image('bullet', 'bullet.png');
     }
 
@@ -76,7 +76,7 @@ const initGame = () => {
       this.createMap();
       this.createPlayer();
       this.createPortal();
-      this.createCoins();
+      this.createHearts();
       this.createEnemies();
       this.createBullets();
 
@@ -100,7 +100,7 @@ const initGame = () => {
       this.physics.add.collider(this.enemiesGroup, this.blockedLayer);
       this.physics.add.overlap(this.player, this.enemiesGroup, this.player.enemyCollision.bind(this.player));
       this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this, false));
-      this.physics.add.overlap(this.coinsGroup, this.player, this.coinsGroup.collectCoin.bind(this.coinsGroup));
+      this.physics.add.overlap(this.heartsGroup, this.player, this.heartsGroup.collectHeart.bind(this.heartsGroup));
       this.physics.add.overlap(this.bullets, this.enemiesGroup, this.bullets.enemyCollision);
     }
 
@@ -135,9 +135,9 @@ const initGame = () => {
       });
     }
 
-    createCoins() {
-      this.coins = this.map.createFromObjects('Coins', 'Coin', { key: 'coin' });
-      this.coinsGroup = new Coins(this.physics.world, this, [], this.coins);
+    createHearts() {
+      this.hearts = this.map.createFromObjects('Hearts', 'Heart', { key: 'heart' });
+      this.heartsGroup = new Hearts(this.physics.world, this, [], this.hearts);
     }
 
     createEnemies() {
@@ -172,20 +172,19 @@ const initGame = () => {
     }
 
     init() {
-      this.coinsCollected = 0;
+      this.heartsCollected = 0;
       this.health = 3;
     }
 
     create() {
       const textStyle = { fontSize: '32px', fill: '#000000' };
-      this.scoreText = this.add.text(12, 12, `Score: ${this.coinsCollected}`, textStyle);
-      this.healthText = this.add.text(12, 50, `Health: ${this.health}`, textStyle);
+      this.healthText = this.add.text(20, 20, `Health: ${this.health}`, textStyle);
 
       this.gameScene = this.scene.get('Game');
 
-      this.gameScene.events.on('coinCollected', () => {
-        this.coinsCollected += 1;
-        this.scoreText.setText(`Score: ${this.coinsCollected}`);
+      this.gameScene.events.on('heartCollected', () => {
+        this.health += 1;
+        this.healthText.setText(`Health: ${this.health}`);
       });
 
       this.gameScene.events.on('loseHealth', () => {
@@ -194,9 +193,8 @@ const initGame = () => {
       });
 
       this.gameScene.events.on('newGame', () => {
-        this.coinsCollected = 0;
+        this.heartsCollected = 0;
         this.health = 3;
-        this.scoreText.setText(`Score: ${this.coinsCollected}`);
         this.healthText.setText(`Health: ${this.health}`);
       });
     }
@@ -300,27 +298,27 @@ const initGame = () => {
     }
   }
 
-  class Coins extends Phaser.Physics.Arcade.StaticGroup {
+  class Hearts extends Phaser.Physics.Arcade.StaticGroup {
     constructor(world, scene, children, spriteArray) {
       super(world, scene, children);
       this.scene = scene;
-      this.createCoins(spriteArray);
+      this.createHearts(spriteArray);
     }
 
-    createCoins(spriteArray) {
-      spriteArray.forEach((coin) => {
-        coin.setOrigin(0);
-        this.world.enableBody(coin, 1);
-        coin.body.setSize(coin.width * coin.scaleX, coin.height * coin.scaleY, true)
-        this.add(coin);
+    createHearts(spriteArray) {
+      spriteArray.forEach((heart) => {
+        heart.setOrigin(0);
+        this.world.enableBody(heart, 1);
+        heart.body.setSize(heart.width * heart.scaleX, heart.height * heart.scaleY, true)
+        this.add(heart);
       });
       this.refresh();
     }
 
-    collectCoin(player, coin) {
-      this.remove(coin);
-      coin.destroy();
-      this.scene.events.emit('coinCollected');
+    collectHeart(player, heart) {
+      this.remove(heart);
+      heart.destroy();
+      this.scene.events.emit('heartCollected');
     }
   }
 
