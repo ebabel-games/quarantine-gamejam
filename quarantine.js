@@ -404,78 +404,91 @@ const initGame = () => {
     }
   }
 
+  class Bullet extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+      super(scene, x, y, 'bullet');
+      this.straightSpeed = 300;
+      this.diagonalSpeed = straightToDiagonalSpeed(this.straightSpeed);
+    }
+
+    fire(x, y, bulletDirection) {
+      this.enableBody(true);
+      this.body.reset(x, y);
+      this.setActive(true);
+      this.setVisible(true);
+      this.setPosition(x, y);
+      this.setScale(0.1);
+      this.scene.physics.add.existing(this);
+
+      switch (bulletDirection) {
+        case 'north':
+          this.setVelocityY(-this.straightSpeed);
+          break;
+        case 'south':
+          this.setVelocityY(this.straightSpeed);
+          break;
+        case 'west':
+          this.setVelocityX(-this.straightSpeed);
+          break;
+        case 'north-west':
+          this.setVelocityY(-this.diagonalSpeed);
+          this.setVelocityX(-this.diagonalSpeed);
+          break;
+        case 'north-east':
+          this.setVelocityY(-this.diagonalSpeed);
+          this.setVelocityX(this.diagonalSpeed);
+          break;
+        case 'south-west':
+          this.setVelocityY(this.diagonalSpeed);
+          this.setVelocityX(-this.diagonalSpeed);
+          break;
+        case 'south-east':
+          this.setVelocityY(this.diagonalSpeed);
+          this.setVelocityX(this.diagonalSpeed);
+          break;
+        default:  // East.
+        this.setVelocityX(this.straightSpeed);
+      }
+
+      this.scene.time.addEvent({
+        delay: 1500,
+        callback: () => {
+          this.setActive(false);
+          this.setVisible(false);
+          if (this.body) {
+            this.body.setVelocity(0);
+            this.disableBody();
+          }
+        },
+      });
+    }
+  }
+
   class Bullets extends Phaser.Physics.Arcade.Group {
     constructor(world, scene, children) {
       super(world, scene);
       this.scene = scene;
-      this.straightSpeed = 300;
-      this.diagonalSpeed = straightToDiagonalSpeed(this.straightSpeed);
 
       this.createMultiple({
         frameQuantity: 5,
         key: 'bullet',
         active: false,
         visible: false,
+        classType: Bullet,
       });
     }
 
     fireBullet(x, y, bulletDirection) {
       const bullet = this.getFirstDead(false);
       if (bullet) {
-        this.scene.physics.add.existing(bullet);
-        bullet.active = true;
-        bullet.visible = true;
-        bullet.setPosition(x, y);
-        bullet.setScale(0.1);
-
-        switch (bulletDirection) {
-          case 'north':
-            bullet.setVelocityY(-this.straightSpeed);
-            break;
-          case 'south':
-            bullet.setVelocityY(this.straightSpeed);
-            break;
-          case 'west':
-            bullet.setVelocityX(-this.straightSpeed);
-            break;
-          case 'north-west':
-            bullet.setVelocityY(-this.diagonalSpeed);
-            bullet.setVelocityX(-this.diagonalSpeed);
-            break;
-          case 'north-east':
-            bullet.setVelocityY(-this.diagonalSpeed);
-            bullet.setVelocityX(this.diagonalSpeed);
-            break;
-          case 'south-west':
-            bullet.setVelocityY(this.diagonalSpeed);
-            bullet.setVelocityX(-this.diagonalSpeed);
-            break;
-          case 'south-east':
-            bullet.setVelocityY(this.diagonalSpeed);
-            bullet.setVelocityX(this.diagonalSpeed);
-            break;
-          default:  // East.
-            bullet.setVelocityX(this.straightSpeed);
-        }
-
-        this.scene.time.addEvent({
-          delay: 1500,
-          callback: () => {
-            bullet.active = false;
-            bullet.visible = false;
-            if (bullet.body) {
-              bullet.body.setVelocity(0);
-              bullet.destroy();
-            }
-          },
-        });
+        bullet.fire(x, y, bulletDirection);
       }
     }
 
     enemyCollision(bullet, enemy) {
       bullet.active = false;
       bullet.visible = false;
-      bullet.destroy();
+      bullet.disableBody();
       enemy.loseHealth();
     }
   }
