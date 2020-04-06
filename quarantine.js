@@ -37,11 +37,10 @@ const initGame = () => {
         return this.load.tilemapTiledJSON(this.levels[key], `${this.levels[key]}.json`);
       });
 
-      this.load.spritesheet('RPGpack_sheet', 'RPGpack_sheet.png', {frameWidth: 64, frameHeight: 64});
-      this.load.spritesheet('characters', 'roguelikeChar_transparent.png', {frameWidth: 17, frameHeight: 17});
+      this.load.spritesheet('tiles', 'tiles.png', {frameWidth: 64, frameHeight: 64});
       this.load.image('portal', 'raft.png');
-      this.load.image('coin', 'coin_01.png');
-      this.load.image('bullet', 'ballBlack_04.png');
+      this.load.image('coin', 'heart.png');
+      this.load.image('bullet', 'bullet.png');
     }
 
     create() {
@@ -106,12 +105,12 @@ const initGame = () => {
     }
 
     createMap() {
-      this.add.tileSprite(0, 0, 8000, 8000, 'RPGpack_sheet', 31); // Add water everywhere in the background.
+      this.add.tileSprite(0, 0, 8000, 8000, 'tiles', 4); // Add water everywhere in the background.
 
       // Load the current level.
       this.map = this.make.tilemap({ key: this._LEVELS[this._LEVEL] });
 
-      this.tiles = this.map.addTilesetImage('RPGpack_sheet');
+      this.tiles = this.map.addTilesetImage('tiles');
       this.backgroundLayer = this.map.createStaticLayer('Background', this.tiles, 0, 0);
       this.blockedLayer = this.map.createStaticLayer('Blocked', this.tiles, 0, 0);
 
@@ -120,7 +119,6 @@ const initGame = () => {
       }
 
       this.blockedLayer.setCollisionByExclusion(this.noTileExcluded);
-      this.foregroundLayer = this.map.createStaticLayer('Foreground', this.tiles, 0, 0);
     }
 
     createPlayer() {
@@ -179,7 +177,7 @@ const initGame = () => {
     }
 
     create() {
-      const textStyle = { fontSize: '32px', fill: '#ffffff' };
+      const textStyle = { fontSize: '32px', fill: '#000000' };
       this.scoreText = this.add.text(12, 12, `Score: ${this.coinsCollected}`, textStyle);
       this.healthText = this.add.text(12, 50, `Health: ${this.health}`, textStyle);
 
@@ -206,7 +204,7 @@ const initGame = () => {
 
   class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
-      super(scene, x, y, 'characters', 325);
+      super(scene, x, y, 'tiles', 11);
       this.scene = scene;
       this.hitDelay = false;
       this.bulletDirection = 'east';
@@ -216,9 +214,6 @@ const initGame = () => {
 
       // Add the player object to the scene.
       this.scene.add.existing(this);
-
-      // Scale the player tile size.
-      this.setScale(4);
 
       this.straightSpeed = 150;
       this.diagonalSpeed = straightToDiagonalSpeed(this.straightSpeed);
@@ -274,7 +269,7 @@ const initGame = () => {
       if (!this.hitDelay) {
         this.loseHealth();
         this.hitDelay = true;
-        this.tint = 0xff0000;
+        this.tint = 0x999999;
         this.scene.time.addEvent({
           delay: 1200,
           callback: () => {
@@ -316,7 +311,6 @@ const initGame = () => {
       spriteArray.forEach((coin) => {
         coin.setOrigin(0);
         this.world.enableBody(coin, 1);
-        coin.setScale(0.2);
         coin.body.setSize(coin.width * coin.scaleX, coin.height * coin.scaleY, true)
         this.add(coin);
       });
@@ -332,14 +326,13 @@ const initGame = () => {
 
   class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, frameIndex) {
-      super(scene, x, y, 'characters', frameIndex);
+      super(scene, x, y, 'tiles', frameIndex);
 
       this.scene = scene;
       this.health = 3;
 
       this.scene.physics.world.enable(this);
       this.scene.add.existing(this);
-      this.setScale(4);
 
       // Move this enemy.
       this.moveEvent = this.scene.time.addEvent({
@@ -370,7 +363,7 @@ const initGame = () => {
 
     loseHealth() {
       this.health--;
-      this.tint = 0xff0000;
+      this.tint = 0x999999;
       if (this.health <= 0) {
         this.moveEvent.destroy(); // Remove the time event of the enemy object that is about to be destroyed.
         this.destroy();
@@ -389,15 +382,12 @@ const initGame = () => {
     constructor(world, scene, children, spriteArray) {
       super(world, scene, children);
       this.scene = scene;
-      this.spriteFrames = [0, 1, 54, 55, 108, 109, 162, 163];
-
       this.createEnemies(scene, spriteArray);
     }
 
     createEnemies(scene, spriteArray) {
       spriteArray.forEach((sprite) => {
-        const randomIndex = Math.floor(Math.random() * this.spriteFrames.length - 1);
-        const enemy = new  Enemy(scene, sprite.x, sprite.y, this.spriteFrames[randomIndex]);
+        const enemy = new Enemy(scene, sprite.x, sprite.y, 10);
         this.add(enemy);
         sprite.destroy();
       });
@@ -417,7 +407,6 @@ const initGame = () => {
       this.setActive(true);
       this.setVisible(true);
       this.setPosition(x, y);
-      this.setScale(0.1);
       this.scene.physics.add.existing(this);
 
       switch (bulletDirection) {
