@@ -102,6 +102,7 @@ const initGame = () => {
       this.physics.add.overlap(this.player, this.enemiesGroup, this.player.enemyCollision.bind(this.player));
       this.physics.add.overlap(this.player, this.portal, this.loadNextLevel.bind(this, false));
       this.physics.add.overlap(this.coinsGroup, this.player, this.coinsGroup.collectCoin.bind(this.coinsGroup));
+      this.physics.add.overlap(this.bullets, this.enemiesGroup, this.bullets.enemyCollision);
     }
 
     createMap() {
@@ -341,7 +342,7 @@ const initGame = () => {
       this.setScale(4);
 
       // Move this enemy.
-      this.scene.time.addEvent({
+      this.moveEvent = this.scene.time.addEvent({
         delay: Math.ceil(Math.random() * 4000 + 1000),
         callback: this.move,
         loop: true,
@@ -371,6 +372,7 @@ const initGame = () => {
       this.health--;
       this.tint = 0xff0000;
       if (this.health <= 0) {
+        this.moveEvent.destroy(); // Remove the time event of the enemy object that is about to be destroyed.
         this.destroy();
       } else {
         this.scene.time.addEvent({
@@ -468,6 +470,13 @@ const initGame = () => {
           },
         });
       }
+    }
+
+    enemyCollision(bullet, enemy) {
+      bullet.active = false;
+      bullet.visible = false;
+      bullet.destroy();
+      enemy.loseHealth();
     }
   }
 
