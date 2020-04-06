@@ -1,4 +1,7 @@
 const initGame = () => {
+  // This formula is based on a 45 degrees angle, to maintain a consistent speed.
+  const straightToDiagonalSpeed = (straightSpeed) => Math.ceil(Math.sqrt(Math.pow(straightSpeed, 2)/2));
+
   const config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
@@ -89,7 +92,7 @@ const initGame = () => {
       this.player.update(this.cursors);
 
       if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-        this.bullets.fireBullet(this.player.x, this.player.y);
+        this.bullets.fireBullet(this.player.x, this.player.y, this.player.bulletDirection);
       }
     }
 
@@ -205,6 +208,7 @@ const initGame = () => {
       super(scene, x, y, 'characters', 325);
       this.scene = scene;
       this.hitDelay = false;
+      this.bulletDirection = 'east';
 
       // Enable physics for the player object.
       this.scene.physics.world.enable(this);
@@ -216,37 +220,45 @@ const initGame = () => {
       this.setScale(4);
 
       this.straightSpeed = 150;
-      this.diagonalSpeed = Math.ceil(Math.sqrt(Math.pow(this.straightSpeed, 2)/2)); // This formula is based on a 45 degrees angle, to maintain a consistent speed.
+      this.diagonalSpeed = straightToDiagonalSpeed(this.straightSpeed);
       this.noSpeed = 0;
     }
 
     update(cursors) {
       if (cursors.up.isDown) {
         this.setVelocityY(-this.straightSpeed);
+        this.bulletDirection = 'north';
       } else if (cursors.down.isDown) {
         this.setVelocityY(this.straightSpeed);
+        this.bulletDirection = 'south';
       }
       if (cursors.left.isDown) {
         this.setVelocityX(-this.straightSpeed);
+        this.bulletDirection = 'west';
       } else if (cursors.right.isDown) {
         this.setVelocityX(this.straightSpeed);
+        this.bulletDirection = 'east';
       }
 
       if (cursors.up.isDown && cursors.left.isDown) {
         this.setVelocityY(-this.diagonalSpeed);
         this.setVelocityX(-this.diagonalSpeed);
+        this.bulletDirection = 'north-west';
       }
       if (cursors.up.isDown && cursors.right.isDown) {
         this.setVelocityY(-this.diagonalSpeed);
         this.setVelocityX(this.diagonalSpeed);
+        this.bulletDirection = 'north-east';
       }
       if (cursors.down.isDown && cursors.left.isDown) {
         this.setVelocityY(this.diagonalSpeed);
         this.setVelocityX(-this.diagonalSpeed);
+        this.bulletDirection = 'south-west';
       }
       if (cursors.down.isDown && cursors.right.isDown) {
         this.setVelocityY(this.diagonalSpeed);
         this.setVelocityX(this.diagonalSpeed);
+        this.bulletDirection = 'south-east';
       }
 
       if (cursors.up.isUp && cursors.down.isUp) {
@@ -394,6 +406,8 @@ const initGame = () => {
     constructor(world, scene, children) {
       super(world, scene);
       this.scene = scene;
+      this.straightSpeed = 300;
+      this.diagonalSpeed = straightToDiagonalSpeed(this.straightSpeed);
 
       this.createMultiple({
         frameQuantity: 5,
@@ -403,14 +417,56 @@ const initGame = () => {
       });
     }
 
-    fireBullet(x, y) {
+    fireBullet(x, y, bulletDirection) {
       const bullet = this.getFirstDead(false);
       if (bullet) {
         this.scene.physics.add.existing(bullet);
         bullet.active = true;
         bullet.visible = true;
         bullet.setPosition(x, y);
-        bullet.setVelocityX(300);
+        bullet.setScale(0.1);
+
+        switch (bulletDirection) {
+          case 'north':
+            bullet.setVelocityY(-this.straightSpeed);
+            break;
+          case 'south':
+            bullet.setVelocityY(this.straightSpeed);
+            break;
+          case 'west':
+            bullet.setVelocityX(-this.straightSpeed);
+            break;
+          case 'north-west':
+            bullet.setVelocityY(-this.diagonalSpeed);
+            bullet.setVelocityX(-this.diagonalSpeed);
+            break;
+          case 'north-east':
+            bullet.setVelocityY(-this.diagonalSpeed);
+            bullet.setVelocityX(this.diagonalSpeed);
+            break;
+          case 'south-west':
+            bullet.setVelocityY(this.diagonalSpeed);
+            bullet.setVelocityX(-this.diagonalSpeed);
+            break;
+          case 'south-east':
+            bullet.setVelocityY(this.diagonalSpeed);
+            bullet.setVelocityX(this.diagonalSpeed);
+            break;
+          default:  // East.
+            bullet.setVelocityX(this.straightSpeed);
+        }
+
+        this.scene.time.addEvent({
+          delay: 1500,
+          callback: () => {
+            bullet.active = false;
+            bullet.visible = false;
+            if (bullet.body) {
+              bullet.body.setVelocity(0);
+              bullet.destroy();
+            }
+          },
+        });
       }
     }
   }
