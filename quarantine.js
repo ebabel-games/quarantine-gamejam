@@ -41,10 +41,19 @@ const initGame = () => {
       this.load.image('portal', 'raft.png');
       this.load.image('heart', 'heart.png');
       this.load.image('bullet', 'bullet.png');
+      this.load.audio('music', [ 'weirdsadsong.ogg', 'weirdsadsong.mp3' ]);
     }
 
     create() {
-      this.scene.start('Game', {level: 1, newGame: true, levels: this.levels});
+      const music = this.sound.add('music');
+
+      const textStyle = { fontSize: '32px', fill: '#ffffff' };
+      this.add.text(290, 300, 'PLAY', textStyle)
+        .setInteractive()
+        .on('pointerdown', () => {
+          music.play();
+          this.scene.start('Game', {level: 1, newGame: true, levels: this.levels});
+        });
     }
   }
 
